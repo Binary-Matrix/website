@@ -3,234 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suman | Ultimate Dhamaka Interface</title>
+    <title>Suman | Dhurandhar Protocol</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap');
-
         :root {
-            --gold: #d4af37;
-            --obsidian: #050506;
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg: #0a0500;
+            --ember: #ff4500;
+            --magma: #ff8c00;
+            --glass: rgba(20, 10, 0, 0.85);
+            --border: 1px solid rgba(255, 69, 0, 0.4);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
         body { 
-            background: var(--obsidian); 
-            color: #e5e4e2; 
-            font-family: 'Inter', sans-serif;
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* --- Full Responsiveness --- */
-        .container { 
-            width: 90%; max-width: 1200px; 
-            margin: 0 auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 30px;
+        /* === DHURANDHAR CURSOR === */
+        #custom-cursor {
+            position: fixed; width: 12px; height: 12px; background: var(--ember);
+            border-radius: 50%; pointer-events: none; z-index: 10000;
+            box-shadow: 0 0 25px var(--ember), 0 0 50px var(--magma); transform: translate(-50%, -50%);
         }
 
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px; border: 1px solid rgba(212, 175, 55, 0.3);
-            background: var(--glass); backdrop-filter: blur(10px); border-radius: 15px;
+        /* === AMBIENT BACKGROUND === */
+        #glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle 300px at var(--x, 0) var(--y, 0), rgba(255, 69, 0, 0.1), transparent);
+            pointer-events: none; z-index: 9999;
+        }
+        canvas#bg-embers { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        /* === AUTH OVERLAY === */
+        #task-overlay {
+            position: fixed; inset: 0; background: #000;
+            z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .igniter {
+            width: 100px; height: 100px; border: 2px solid var(--ember);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.5s; font-weight: 800; color: var(--ember);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+        }
+        .igniter:hover { background: var(--ember); color: #000; box-shadow: 0 0 50px var(--ember); }
+
+        /* === UI LAYOUT === */
+        .wrapper { width: 92%; max-width: 1200px; margin: 0 auto; padding: 40px 0; display: flex; flex-direction: column; gap: 30px; }
+        
+        .header {
+            display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding: 40px;
+            background: var(--glass); border-radius: 5px; border-left: 5px solid var(--ember);
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
         }
 
-        .hero {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px; padding: 30px; border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px; background: var(--glass);
+        .profile-frame {
+            width: 200px; height: 200px; border: 1px solid var(--ember);
+            padding: 10px; background: rgba(255,69,0,0.05);
+        }
+        #profile-img { width: 100%; height: 100%; object-fit: cover; grayscale: 1; transition: 0.5s; }
+        #profile-img:hover { grayscale: 0; filter: contrast(1.2) sepia(0.5); }
+
+        /* === GAME GRID === */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+        .card { 
+            background: var(--glass); padding: 25px; border: var(--border); 
+            position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .card:hover { border-color: var(--magma); background: rgba(40, 20, 0, 0.9); }
+        .card h3 { color: var(--ember); margin-bottom: 15px; letter-spacing: 2px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,69,0,0.2); padding-bottom: 10px;}
+
+        /* Canvas Games */
+        canvas.game-cvs { background: #050505; display: block; margin: 0 auto; border: 1px solid #222; width: 100%; }
+
+        /* Flee Button Zone */
+        .flee-zone { height: 180px; position: relative; background: #050505; border-radius: 4px; }
+        #flee-btn { 
+            position: absolute; padding: 8px 16px; background: var(--ember); color: #000;
+            border: none; font-weight: 900; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            transition: 0.1s linear;
         }
 
-        .photo-box {
-            width: 100%; aspect-ratio: 1/1; border: 2px solid var(--gold);
-            overflow: hidden; background: #111;
-        }
-        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .tag { color: var(--magma); font-weight: bold; opacity: 0.8; }
+        
+        #yt-player { position: absolute; top: -999px; visibility: hidden; }
 
-        /* --- Buttons & Instruments --- */
-        .sound-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
-            margin-top: 20px; 
-        }
-
-        .btn {
-            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
-            color: var(--gold); padding: 15px; font-weight: 800;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-        }
-        .btn:hover { background: var(--gold); color: black; transform: scale(1.02); }
-
-        /* --- Particle System --- */
-        .particle {
-            position: fixed; pointer-events: none; z-index: 9999;
-            will-change: transform, opacity;
-        }
-
-        /* --- Games Section --- */
-        .game-section {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; width: 100%;
-        }
-        .game-card {
-            background: #000; border: 1px solid var(--gold);
-            padding: 15px; border-radius: 15px; text-align: center;
-        }
-        canvas { width: 100%; height: 150px; background: #080808; border-radius: 8px; }
-
-        /* Hidden Music Player */
-        #yt-player { position: absolute; top: -999px; left: -999px; visibility: hidden; }
-
-        @media (max-width: 600px) {
-            nav { flex-direction: column; gap: 10px; }
-            .hero { padding: 15px; }
-            .sound-grid { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
+            .header { grid-template-columns: 1fr; text-align: center; padding: 20px; }
+            .profile-frame { margin: 0 auto; }
+            h1 { font-size: 2.5rem !important; }
         }
     </style>
 </head>
-<body onclick="startDhamaka()">
+<body>
 
-<!-- YouTube Background Music -->
+<div id="glow"></div>
+<div id="custom-cursor"></div>
+<canvas id="bg-embers"></canvas>
+
+<!-- Hidden YouTube Audio -->
 <div id="yt-player">
-    <iframe id="video" width="560" height="315" 
-    src="https://www.youtube.com/embed/OgPRcW4ytmE?enablejsapi=1&autoplay=0&loop=1" 
+    <iframe id="music-frame" width="10" height="10" 
+    src="https://www.youtube.com/embed/OgPRcW4ytmE?enablejsapi=1&loop=1&playlist=OgPRcW4ytmE" 
     allow="autoplay"></iframe>
 </div>
 
-<div class="container">
-    <nav>
-        <h2 style="color: var(--gold); letter-spacing: 3px;">SUMAN // NEUPANE</h2>
-        <p style="font-size: 0.7rem; opacity: 0.6;">KATHMANDU | G-BASS PROTOCOL</p>
-    </nav>
+<!-- Initial Entry -->
+<div id="task-overlay">
+    <div class="igniter" onclick="igniteSystem()">IGNITE</div>
+    <p style="margin-top: 20px; color: #444; letter-spacing: 5px;">DHURANDHAR PROTOCOL v3.0</p>
+</div>
 
-    <div class="hero">
-        <div class="photo-box">
-            <img src="suman.jpg" alt="Profile Photo">
+<div class="wrapper">
+    <div class="header">
+        <div class="profile-frame">
+            <img src="suman.jpg" id="profile-img" alt="Suman">
         </div>
-        <div class="content">
-            <h1 style="font-size: clamp(2rem, 10vw, 4rem); color: var(--gold);">DHAMAKA<br>INTERFACE</h1>
-            <div class="sound-grid">
-                <button class="btn" onclick="playEffect('FLUTE RIFF')">G-Bass Flute</button>
-                <button class="btn" onclick="playEffect('TABLA BEAT')">Tabla</button>
-                <button class="btn" onclick="playEffect('GUITAR STRUM')">Guitar</button>
-                <button class="btn" onclick="playEffect('HARMONIUM')">Harmonium</button>
-            </div>
-            <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button class="btn" style="flex: 1;" onclick="partyPop()">Party Pop</button>
-                <button class="btn" style="flex: 1;" onclick="flowerBurst()">Flower Pulse</button>
+        <div>
+            <h1 style="font-size: 3.5rem; color: #fff; text-transform: uppercase;">Suman Neupane</h1>
+            <p style="color: var(--ember); margin-bottom: 20px;">// SYSTEM_ARCHITECT & MUSICIAN</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                <div><span class="tag">OS:</span> Ubuntu Linux</div>
+                <div><span class="tag">GEAR:</span> G-Bass Flute</div>
+                <div><span class="tag">NODE:</span> Kathmandu, Nepal</div>
+                <div><span class="tag">TECH:</span> AI / ML Roadmap</div>
             </div>
         </div>
     </div>
 
-    <div class="game-section">
-        <div class="game-card"><h3>SNAKE_SYS</h3><canvas id="game1"></canvas></div>
-        <div class="game-card"><h3>ORB_SYS</h3><canvas id="game2"></canvas></div>
+    <div class="grid">
+        <!-- Snake -->
+        <div class="card">
+            <h3>[01] NEURAL_SNAKE.EXE</h3>
+            <canvas id="snake-canvas" class="game-cvs" width="300" height="300"></canvas>
+        </div>
+
+        <!-- Flee -->
+        <div class="card">
+            <h3>[02] KINETIC_ESCAPE.SYS</h3>
+            <div class="flee-zone" id="flee-zone">
+                <button id="flee-btn">TARGET</button>
+            </div>
+        </div>
+
+        <!-- Core Log -->
+        <div class="card">
+            <h3>[03] ACTIVE_MODULES</h3>
+            <ul style="list-style: none; font-size: 0.9rem; line-height: 2.2;">
+                <li>🔥 Rocket League Strategy Session</li>
+                <li>🔥 G-Bass Flute: Bollywood Soul</li>
+                <li>🔥 Guitar Chord Progression</li>
+                <li>🔥 Badminton / Football Drills</li>
+                <li>🔥 Hardware Store Inventory Sync</li>
+            </ul>
+            <button onclick="spawnEmbers()" style="margin-top: 20px; width: 100%; padding: 12px; background: var(--ember); border: none; font-weight: bold; color: #000; cursor: pointer;">MANUAL_OVERLOAD</button>
+        </div>
     </div>
+
+    <p style="text-align: center; color: #222; font-size: 0.7rem; margin-top: 50px;">DHURANDHAR ENGINE // POWERED BY UBUNTU 26.04</p>
 </div>
 
 <script>
-    let isStarted = false;
-    
-    // 1. Music & Sound Control
-    function startDhamaka() {
-        if (!isStarted) {
-            const frame = document.getElementById('video');
-            frame.src += "&autoplay=1";
-            isStarted = true;
-            console.log("Music Initialized");
-        }
+    // --- SYSTEM IGNITION ---
+    function igniteSystem() {
+        const frame = document.getElementById('music-frame');
+        frame.src += "&autoplay=1";
+        document.getElementById('task-overlay').style.display = 'none';
+        spawnEmbers();
     }
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playEffect(text) {
-        // Sound
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
-        osc.start(); osc.stop(audioCtx.currentTime + 1);
+    // --- CURSOR ---
+    const cursor = document.getElementById('custom-cursor');
+    const glow = document.getElementById('glow');
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        glow.style.setProperty('--x', e.clientX + 'px');
+        glow.style.setProperty('--y', e.clientY + 'px');
+    });
 
-        // Visual Note
-        const el = document.createElement('div');
-        el.style.position = 'fixed';
-        el.style.left = Math.random() * 80 + '%';
-        el.style.top = '50%';
-        el.style.color = '#d4af37';
-        el.style.fontWeight = 'bold';
-        el.innerText = text;
-        el.style.transition = '2s';
-        document.body.appendChild(el);
-        setTimeout(() => { el.style.transform = 'translateY(-200px)'; el.style.opacity = '0'; }, 10);
-        setTimeout(() => el.remove(), 2000);
-    }
+    // --- EMBER BACKGROUND ---
+    const canvas = document.getElementById('bg-embers');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.onresize = resize; resize();
 
-    // 2. Physics Engine (Gravity & Slowdown)
-    let particles = [];
-    function spawn(type, x, y, isPop) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const isConf = type === 'conf';
-        
-        p.style.width = isConf ? '10px' : '30px';
-        p.style.height = isConf ? '10px' : '30px';
-        p.style.backgroundColor = isConf ? '#d4af37' : 'transparent';
-        if(!isConf) {
-            p.innerText = '🌸';
-            p.style.fontSize = '24px';
-            p.style.pointerEvents = 'auto';
-            p.onclick = () => alert("I LOVE YOU");
-        }
+    let particles = Array(50).fill().map(() => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        v: Math.random() * 2 + 0.5,
+        s: Math.random() * 2
+    }));
 
-        let px = x || window.innerWidth / 2;
-        let py = y || window.innerHeight;
-        let vx = (Math.random() - 0.5) * (isPop ? 30 : 10);
-        let vy = isPop ? -25 : -10;
-        let op = 1;
-
-        document.body.appendChild(p);
-        particles.push({
-            update: () => {
-                vx *= 0.96; vy *= 0.96; // Air Friction
-                vy += 0.15; // Gravity
-                px += vx; py += vy; op -= 0.008; // Mid-air vanish
-                
-                p.style.opacity = op;
-                p.style.transform = `translate(${px}px, ${py}px) rotate(${px}deg)`;
-                if(op <= 0) { p.remove(); return false; }
-                return true;
-            }
+    function drawEmbers() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.y -= p.v;
+            if(p.y < 0) p.y = canvas.height;
+            ctx.fillStyle = "rgba(255, 69, 0, 0.3)";
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
         });
+        requestAnimationFrame(drawEmbers);
+    }
+    drawEmbers();
+
+    function spawnEmbers() {
+        for(let i=0; i<30; i++) {
+            let e = document.createElement('div');
+            e.style.position = 'fixed';
+            e.style.left = Math.random() * 100 + 'vw';
+            e.style.top = '105vh';
+            e.style.width = '4px'; e.style.height = '4px';
+            e.style.background = 'var(--ember)';
+            e.style.boxShadow = '0 0 10px var(--magma)';
+            e.style.zIndex = '10002';
+            e.style.transition = '3s cubic-bezier(0,1,1,1)';
+            document.body.appendChild(e);
+            setTimeout(() => { e.style.transform = `translateY(-120vh) translateX(${(Math.random()-0.5)*200}px)`; e.style.opacity = '0'; }, 10);
+            setTimeout(() => e.remove(), 3000);
+        }
     }
 
-    function partyPop() { for(let i=0; i<100; i++) spawn('conf', null, null, true); }
-    function flowerBurst() { for(let i=0; i<30; i++) spawn('flow', window.innerWidth/2, window.innerHeight/2, false); }
-
-    function animate() {
-        particles = particles.filter(p => p.update());
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // 3. Mini Games
-    const ctx1 = document.getElementById('game1').getContext('2d');
+    // --- SNAKE GAME ---
+    const sc = document.getElementById("snake-canvas");
+    const sctx = sc.getContext("2d");
+    let snake = [{x: 10, y: 10}], food = {x: 5, y: 5}, dx = 1, dy = 0;
     setInterval(() => {
-        ctx1.fillStyle = '#080808'; ctx1.fillRect(0,0,300,150);
-        ctx1.fillStyle = '#d4af37'; ctx1.fillRect(Math.random()*280, Math.random()*130, 10, 10);
-    }, 100);
+        let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+        snake.unshift(head);
+        if(head.x === food.x && head.y === food.y) food = {x: Math.floor(Math.random()*19), y: Math.floor(Math.random()*19)};
+        else snake.pop();
+        if(head.x<0 || head.x>19 || head.y<0 || head.y>19) snake = [{x:10, y:10}];
+        sctx.fillStyle = "#050505"; sctx.fillRect(0,0,300,300);
+        sctx.fillStyle = "#ff4500"; snake.forEach(p => sctx.fillRect(p.x*15, p.y*15, 13, 13));
+        sctx.fillStyle = "#fff"; sctx.fillRect(food.x*15, food.y*15, 13, 13);
+    }, 120);
+    document.addEventListener("keydown", e => {
+        if(e.key === "ArrowUp" && dy===0) {dx=0; dy=-1;}
+        if(e.key === "ArrowDown" && dy===0) {dx=0; dy=1;}
+        if(e.key === "ArrowLeft" && dx===0) {dx=-1; dy=0;}
+        if(e.key === "ArrowRight" && dx===0) {dx=1; dy=0;}
+    });
 
-    const ctx2 = document.getElementById('game2').getContext('2d');
-    let angle = 0;
-    function draw() {
-        ctx2.clearRect(0,0,300,150);
-        ctx2.strokeStyle = '#d4af37';
-        ctx2.beginPath();
-        ctx2.arc(150 + Math.cos(angle)*50, 75 + Math.sin(angle)*30, 10, 0, Math.PI*2);
-        ctx2.stroke();
-        angle += 0.05;
-        requestAnimationFrame(draw);
-    }
-    draw();
+    // --- KINETIC FLEE ---
+    const fbtn = document.getElementById('flee-btn');
+    const fzone = document.getElementById('flee-zone');
+    fzone.addEventListener('mousemove', (e) => {
+        const r = fbtn.getBoundingClientRect();
+        const dist = Math.hypot(e.clientX - (r.left + r.width/2), e.clientY - (r.top + r.height/2));
+        if(dist < 70) {
+            fbtn.style.left = Math.random() * (fzone.clientWidth - 80) + 'px';
+            fbtn.style.top = Math.random() * (fzone.clientHeight - 40) + 'px';
+            fbtn.style.background = 'white';
+            setTimeout(() => fbtn.style.background = 'var(--ember)', 200);
+        }
+    });
 </script>
 </body>
 </html>
