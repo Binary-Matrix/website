@@ -3,206 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suman | Premium Interactive Portfolio</title>
+    <title>Suman | Ultimate Dhamaka Interface</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap');
 
         :root {
-            --obsidian: #050506;
             --gold: #d4af37;
-            --platinum: #e5e4e2;
-            --glass: rgba(255, 255, 255, 0.02);
-            --border: 1px solid rgba(212, 175, 55, 0.3);
+            --obsidian: #050506;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
         
         body { 
             background: var(--obsidian); 
-            color: var(--platinum); 
+            color: #e5e4e2; 
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* Custom Cursor */
-        #cursor, #cursor-follower { position: fixed; pointer-events: none; z-index: 10000; }
-        #cursor { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
-        #cursor-follower { width: 40px; height: 40px; border: 1px solid var(--gold); border-radius: 50%; transition: transform 0.12s ease-out; }
-
-        @media (max-width: 768px) {
-            * { cursor: auto !important; }
-            #cursor, #cursor-follower { display: none; }
-        }
-
+        /* --- Full Responsiveness --- */
         .container { 
-            width: 90%; max-width: 1100px; 
+            width: 90%; max-width: 1200px; 
             margin: 0 auto; padding: 20px; 
-            position: relative; z-index: 10; 
+            display: flex; flex-direction: column; gap: 30px;
         }
 
         nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 25px; border: var(--border); background: var(--glass);
-            backdrop-filter: blur(20px); border-radius: 50px; margin-bottom: 30px;
+            padding: 20px; border: 1px solid rgba(212, 175, 55, 0.3);
+            background: var(--glass); backdrop-filter: blur(10px); border-radius: 15px;
         }
 
-        /* Responsive Layout */
         .hero {
-            display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;
-            padding: 30px; background: var(--glass); border: var(--border);
-            border-radius: 25px; align-items: center;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; padding: 30px; border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px; background: var(--glass);
         }
 
-        @media (max-width: 850px) {
-            .hero { grid-template-columns: 1fr; text-align: center; }
-            nav { flex-direction: column; gap: 10px; border-radius: 20px; text-align: center; }
+        .photo-box {
+            width: 100%; aspect-ratio: 1/1; border: 2px solid var(--gold);
+            overflow: hidden; background: #111;
         }
-        
-        .photo-container {
-            width: 100%; aspect-ratio: 1/1; border: 1px solid var(--gold);
-            position: relative; overflow: hidden; background: #111;
-        }
-        .photo-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .sound-board { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        @media (max-width: 480px) { .sound-board { grid-template-columns: 1fr; } }
-
-        .sound-btn {
-            background: rgba(212, 175, 55, 0.03); border: var(--border);
-            color: var(--platinum); padding: 20px; text-align: center;
-            font-weight: 800; letter-spacing: 2px; transition: 0.4s; font-size: 0.75rem;
-        }
-        .sound-btn:hover { background: var(--gold); color: black; transform: translateY(-3px); }
-
-        .fx-center { text-align: center; margin: 40px 0; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        .fx-btn {
-            background: transparent; border: 1px solid var(--gold); color: var(--gold);
-            padding: 12px 30px; font-weight: 800; text-transform: uppercase; transition: 0.3s;
-        }
-        .fx-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
-
-        .floating-note {
-            position: fixed; color: var(--gold); font-family: monospace;
-            pointer-events: none; z-index: 6000; animation: note-rise 2s forwards;
-            font-weight: bold;
-        }
-        @keyframes note-rise {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+        /* --- Buttons & Instruments --- */
+        .sound-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
+            margin-top: 20px; 
         }
 
-        .particle { position: fixed; z-index: 5000; will-change: transform, opacity; }
+        .btn {
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
+            color: var(--gold); padding: 15px; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover { background: var(--gold); color: black; transform: scale(1.02); }
 
-        /* Hidden Spotify Player */
-        #spotify-player {
-            position: fixed; bottom: -100px; opacity: 0; pointer-events: none;
+        /* --- Particle System --- */
+        .particle {
+            position: fixed; pointer-events: none; z-index: 9999;
+            will-change: transform, opacity;
+        }
+
+        /* --- Games Section --- */
+        .game-section {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; width: 100%;
+        }
+        .game-card {
+            background: #000; border: 1px solid var(--gold);
+            padding: 15px; border-radius: 15px; text-align: center;
+        }
+        canvas { width: 100%; height: 150px; background: #080808; border-radius: 8px; }
+
+        /* Hidden Music Player */
+        #yt-player { position: absolute; top: -999px; left: -999px; visibility: hidden; }
+
+        @media (max-width: 600px) {
+            nav { flex-direction: column; gap: 10px; }
+            .hero { padding: 15px; }
+            .sound-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-<body onclick="startExperience()">
+<body onclick="startDhamaka()">
 
-<div id="cursor"></div>
-<div id="cursor-follower"></div>
-
-<!-- Spotify Embed Code -->
-<div id="spotify-player">
-    <iframe id="sc-widget" src="https://open.spotify.com/embed/track/0KHOIkAcSHTH9S0H0wZV7Q?utm_source=generator&autoplay=1" 
-    width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+<!-- YouTube Background Music -->
+<div id="yt-player">
+    <iframe id="video" width="560" height="315" 
+    src="https://www.youtube.com/embed/OgPRcW4ytmE?enablejsapi=1&autoplay=0&loop=1" 
+    allow="autoplay"></iframe>
 </div>
 
 <div class="container">
     <nav>
-        <div style="font-weight: 800; color: var(--gold);">SUMAN // APEX_LUXURY</div>
-        <div style="font-size: 0.6rem; opacity: 0.6;">KATHMANDU | G-BASS PROTOCOL</div>
+        <h2 style="color: var(--gold); letter-spacing: 3px;">SUMAN // NEUPANE</h2>
+        <p style="font-size: 0.7rem; opacity: 0.6;">KATHMANDU | G-BASS PROTOCOL</p>
     </nav>
 
     <div class="hero">
-        <div class="photo-container">
-            <img src="suman.jpg" alt="Suman">
+        <div class="photo-box">
+            <img src="suman.jpg" alt="Profile Photo">
         </div>
-        <div>
-            <h1 style="font-size: clamp(2rem, 7vw, 3.5rem); line-height: 1; font-weight: 800; margin-bottom: 15px;">SUMAN<br><span style="color: var(--gold)">NEUPANE</span></h1>
-            
-            <div class="sound-board">
-                <button class="sound-btn" onclick="playEffect('SA RE GA MA')">G-BASS FLUTE</button>
-                <button class="sound-btn" onclick="playEffect('DHA DHIN DHIN')">TABLA</button>
-                <button class="sound-btn" onclick="playEffect('STRUM...')">GUITAR</button>
-                <button class="sound-btn" onclick="playEffect('BHAIRAVI')">HARMONIUM</button>
+        <div class="content">
+            <h1 style="font-size: clamp(2rem, 10vw, 4rem); color: var(--gold);">DHAMAKA<br>INTERFACE</h1>
+            <div class="sound-grid">
+                <button class="btn" onclick="playEffect('FLUTE RIFF')">G-Bass Flute</button>
+                <button class="btn" onclick="playEffect('TABLA BEAT')">Tabla</button>
+                <button class="btn" onclick="playEffect('GUITAR STRUM')">Guitar</button>
+                <button class="btn" onclick="playEffect('HARMONIUM')">Harmonium</button>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn" style="flex: 1;" onclick="partyPop()">Party Pop</button>
+                <button class="btn" style="flex: 1;" onclick="flowerBurst()">Flower Pulse</button>
             </div>
         </div>
     </div>
 
-    <div class="fx-center">
-        <button class="fx-btn" onclick="partyPop()">Party Pop</button>
-        <button class="fx-btn" onclick="flowerBurst()">Flower Pulse</button>
+    <div class="game-section">
+        <div class="game-card"><h3>SNAKE_SYS</h3><canvas id="game1"></canvas></div>
+        <div class="game-card"><h3>ORB_SYS</h3><canvas id="game2"></canvas></div>
     </div>
 </div>
 
 <script>
-    let musicStarted = false;
-
-    function startExperience() {
-        if (!musicStarted) {
-            // This triggers the Spotify iframe to play after the first user interaction
-            const iframe = document.getElementById('sc-widget');
-            iframe.src += "&autoplay=1";
-            musicStarted = true;
+    let isStarted = false;
+    
+    // 1. Music & Sound Control
+    function startDhamaka() {
+        if (!isStarted) {
+            const frame = document.getElementById('video');
+            frame.src += "&autoplay=1";
+            isStarted = true;
+            console.log("Music Initialized");
         }
     }
 
-    // Cursor Logic
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursor-follower');
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        follower.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
-    });
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playEffect(text) {
+        // Sound
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
+        osc.start(); osc.stop(audioCtx.currentTime + 1);
 
-    // Instrument Effects
-    function playEffect(note) {
+        // Visual Note
         const el = document.createElement('div');
-        el.className = 'floating-note';
-        el.innerText = note;
-        el.style.left = Math.random() * window.innerWidth + 'px';
-        el.style.top = window.innerHeight / 2 + 'px';
+        el.style.position = 'fixed';
+        el.style.left = Math.random() * 80 + '%';
+        el.style.top = '50%';
+        el.style.color = '#d4af37';
+        el.style.fontWeight = 'bold';
+        el.innerText = text;
+        el.style.transition = '2s';
         document.body.appendChild(el);
+        setTimeout(() => { el.style.transform = 'translateY(-200px)'; el.style.opacity = '0'; }, 10);
         setTimeout(() => el.remove(), 2000);
     }
 
-    // Particle Physics
+    // 2. Physics Engine (Gravity & Slowdown)
     let particles = [];
-    function spawn(type, isPop) {
+    function spawn(type, x, y, isPop) {
         const p = document.createElement('div');
         p.className = 'particle';
         const isConf = type === 'conf';
-        p.style.width = isConf ? '8px' : '28px';
-        p.style.height = isConf ? '12px' : '28px';
+        
+        p.style.width = isConf ? '10px' : '30px';
+        p.style.height = isConf ? '10px' : '30px';
         p.style.backgroundColor = isConf ? '#d4af37' : 'transparent';
         if(!isConf) {
             p.innerText = '🌸';
             p.style.fontSize = '24px';
-            p.onclick = (e) => {
-                const t = document.createElement('div');
-                t.className = 'floating-note'; t.innerText = "I LOVE YOU";
-                t.style.left = e.clientX + 'px'; t.style.top = e.clientY + 'px';
-                document.body.appendChild(t);
-                setTimeout(() => t.remove(), 1000);
-            };
+            p.style.pointerEvents = 'auto';
+            p.onclick = () => alert("I LOVE YOU");
         }
 
-        let px = window.innerWidth / 2;
-        let py = isPop ? window.innerHeight : window.innerHeight / 2;
-        let vx = (Math.random() - 0.5) * (isPop ? 20 : 10);
-        let vy = isPop ? -25 : -5;
+        let px = x || window.innerWidth / 2;
+        let py = y || window.innerHeight;
+        let vx = (Math.random() - 0.5) * (isPop ? 30 : 10);
+        let vy = isPop ? -25 : -10;
         let op = 1;
 
         document.body.appendChild(p);
         particles.push({
             update: () => {
-                vx *= 0.97; vy *= 0.97; vy += 0.1;
-                px += vx; py += vy; op -= 0.007;
+                vx *= 0.96; vy *= 0.96; // Air Friction
+                vy += 0.15; // Gravity
+                px += vx; py += vy; op -= 0.008; // Mid-air vanish
+                
                 p.style.opacity = op;
                 p.style.transform = `translate(${px}px, ${py}px) rotate(${px}deg)`;
                 if(op <= 0) { p.remove(); return false; }
@@ -211,14 +203,34 @@
         });
     }
 
-    function partyPop() { for(let i=0; i<60; i++) spawn('conf', true); }
-    function flowerBurst() { for(let i=0; i<25; i++) spawn('flow', false); }
+    function partyPop() { for(let i=0; i<100; i++) spawn('conf', null, null, true); }
+    function flowerBurst() { for(let i=0; i<30; i++) spawn('flow', window.innerWidth/2, window.innerHeight/2, false); }
 
-    function run() {
+    function animate() {
         particles = particles.filter(p => p.update());
-        requestAnimationFrame(run);
+        requestAnimationFrame(animate);
     }
-    run();
+    animate();
+
+    // 3. Mini Games
+    const ctx1 = document.getElementById('game1').getContext('2d');
+    setInterval(() => {
+        ctx1.fillStyle = '#080808'; ctx1.fillRect(0,0,300,150);
+        ctx1.fillStyle = '#d4af37'; ctx1.fillRect(Math.random()*280, Math.random()*130, 10, 10);
+    }, 100);
+
+    const ctx2 = document.getElementById('game2').getContext('2d');
+    let angle = 0;
+    function draw() {
+        ctx2.clearRect(0,0,300,150);
+        ctx2.strokeStyle = '#d4af37';
+        ctx2.beginPath();
+        ctx2.arc(150 + Math.cos(angle)*50, 75 + Math.sin(angle)*30, 10, 0, Math.PI*2);
+        ctx2.stroke();
+        angle += 0.05;
+        requestAnimationFrame(draw);
+    }
+    draw();
 </script>
 </body>
 </html>
