@@ -3,152 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suman | Zenith Genesis</title>
+    <title>Suman | Galaxy Zenith Protocol</title>
     <style>
         :root {
-            --bg: #030303;
-            --neon-red: #ff3131;
-            --neon-orange: #ff5e00;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: 1px solid rgba(255, 49, 49, 0.3);
+            --bg: #05010a;
+            --neon-purple: #bc13fe;
+            --galaxy-blue: #00d4ff;
+            --magma-red: #ff3131;
+            --glass: rgba(15, 0, 30, 0.85);
+            --border: 1px solid rgba(188, 19, 254, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
         body { 
-            background: var(--bg); color: #fff; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg); color: white; 
+            font-family: 'Inter', -apple-system, sans-serif;
             overflow: hidden; height: 100vh;
         }
 
-        /* === MODERN MACHINE CURSOR === */
+        /* === MACHINE-CORE CURSOR === */
         #cursor {
-            position: fixed; width: 30px; height: 30px; border: 2px solid var(--neon-red);
+            position: fixed; width: 30px; height: 30px; border: 2px solid var(--neon-purple);
             border-radius: 5px; pointer-events: none; z-index: 30000;
             transition: transform 0.1s; display: flex; align-items: center; justify-content: center;
         }
-        #cursor::after { content: ''; width: 4px; height: 4px; background: #fff; }
+        #cursor::after { content: ''; width: 4px; height: 4px; background: var(--galaxy-blue); box-shadow: 0 0 10px var(--galaxy-blue); }
 
-        /* === VIBRATING IGNITION CORE === */
+        /* === VIBRATING BINARY IGNITION === */
         #ignite-screen {
             position: fixed; inset: 0; background: #000; z-index: 40000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .binary-flow {
-            position: absolute; color: #111; font-size: 12px; pointer-events: none;
-            width: 300px; height: 300px; overflow: hidden; text-align: center;
+        .binary-wrap {
+            position: absolute; color: #1a0033; font-size: 10px; width: 400px; height: 400px;
+            overflow: hidden; text-align: center; font-family: monospace; opacity: 0.5;
         }
         #ignite-btn {
-            width: 140px; height: 140px; border-radius: 50%; border: 2px solid var(--neon-red);
-            background: transparent; color: var(--neon-red); font-weight: 900;
-            cursor: pointer; z-index: 2; transition: 0.1s;
+            width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--neon-purple);
+            background: transparent; color: var(--neon-purple); font-weight: 900;
+            cursor: pointer; z-index: 2; transition: 0.1s; position: relative;
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
         }
         .vibrate { animation: shake 0.1s infinite; }
         @keyframes shake {
-            0% { transform: translate(1px, 1px); } 20% { transform: translate(-1px, 0px); }
-            40% { transform: translate(1px, -1px); } 100% { transform: translate(0px, 0px); }
+            0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -1px); }
+            50% { transform: translate(1px, -2px); } 100% { transform: translate(0, 0); }
         }
 
-        /* === UI ARCHITECTURE === */
+        #flash { position: fixed; inset: 0; background: #fff; opacity: 0; z-index: 40001; pointer-events: none; }
+
+        /* === TASK LOCK === */
+        #task-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 35000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .lens {
+            position: absolute; width: 50px; height: 50px; border: 3px solid var(--galaxy-blue);
+            border-radius: 50%; box-shadow: 0 0 15px var(--galaxy-blue); cursor: pointer;
+        }
+
+        /* === MAIN UI === */
         .wrapper { 
-            width: 90%; max-width: 1200px; margin: 0 auto; padding: 40px 0; 
-            display: grid; grid-template-columns: 1fr 400px; gap: 30px; 
-            opacity: 0; transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            width: 90%; max-width: 1100px; margin: 0 auto; padding: 40px 0; 
+            display: grid; grid-template-columns: 1fr 380px; gap: 30px; 
+            opacity: 0; transition: 1.5s;
         }
 
-        .glass-panel { 
-            background: var(--glass); backdrop-filter: blur(20px); 
-            border: var(--border); padding: 30px; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        .glass-card { 
+            background: var(--glass); backdrop-filter: blur(15px); border: var(--border);
+            padding: 30px; border-radius: 20px; position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,1);
         }
 
-        /* Modern Progress Bar */
-        .progress-box { margin: 20px 0; }
-        .bar-bg { width: 100%; height: 6px; background: #111; border-radius: 10px; overflow: hidden; }
-        .bar-fill { 
-            width: 0%; height: 100%; 
-            background: linear-gradient(90deg, var(--neon-red), var(--neon-orange)); 
-            transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Progress Bar */
+        .prog-container { margin: 25px 0; }
+        .prog-bg { height: 8px; background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #222; }
+        .prog-fill { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--neon-purple), var(--galaxy-blue)); 
+            transition: width 2s ease-in-out; box-shadow: 0 0 15px var(--neon-purple);
         }
 
-        /* Confetti Overlay */
-        .confetti {
-            position: fixed; width: 10px; height: 20px; z-index: 1000;
-            pointer-events: none; animation: drop 4s linear forwards;
-        }
-        @keyframes drop {
-            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
+        /* Specialty HUD */
+        .hud-item { border-left: 2px solid var(--neon-purple); padding-left: 15px; margin: 15px 0; }
+        .status-online { color: #00ff00; font-size: 0.7rem; font-weight: bold; text-shadow: 0 0 8px #00ff00; }
 
         /* Love Msg */
-        .love-text {
-            position: fixed; font-weight: 900; font-size: 4rem; z-index: 5000;
-            text-shadow: 0 0 20px var(--neon-red); pointer-events: none;
-            transition: 0.5s ease-out;
+        .love-msg { 
+            position: fixed; font-weight: 900; font-size: 3.5rem; z-index: 20000; 
+            pointer-events: none; text-shadow: 0 0 30px var(--magma-red); 
+            display: none; transition: 0.3s ease-out;
         }
 
-        /* Gaming Zone */
-        canvas { background: #000; width: 100%; border-radius: 10px; border: 1px solid #222; }
-        .game-card { margin-bottom: 20px; }
+        /* Confetti */
+        .confetti { position: fixed; width: 12px; height: 24px; z-index: 1000; pointer-events: none; animation: fall 5s linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(540deg); opacity: 0; } }
 
-        .status-dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px #00ff00; }
+        canvas { width: 100%; border-radius: 10px; background: #000; border: 1px solid #1a0033; }
     </style>
 </head>
 <body>
 
 <div id="cursor"></div>
+<div id="flash"></div>
+
+<!-- Stage 1: Ignition -->
 <div id="ignite-screen">
-    <div class="binary-flow" id="binary"></div>
-    <button id="ignite-btn">HOLD TO IGNITE</button>
-    <p style="margin-top: 20px; letter-spacing: 5px; font-size: 10px; color: #444;">GALAXY BOOK 5 ENGINE</p>
+    <div class="binary-wrap" id="bin-flow"></div>
+    <button id="ignite-btn">GALAXY HOLD</button>
+    <p style="margin-top: 20px; font-size: 10px; color: #333; letter-spacing: 4px;">ENGINE: GALAXY BOOK 5</p>
+</div>
+
+<!-- Stage 2: Task -->
+<div id="task-overlay">
+    <h2 style="color: var(--galaxy-blue); margin-bottom: 10px;">LENS AUTHENTICATION</h2>
+    <p style="font-size: 0.8rem; color: #666;">Destroy 5 lenses to stabilize the link</p>
+    <div id="lens-box"></div>
 </div>
 
 <div id="yt-audio"></div>
 
 <div class="wrapper" id="main-ui">
     <div class="left-col">
-        <div class="glass-panel">
-            <h1 style="font-size: 3.5rem; letter-spacing: -2px;">SUMAN NEUPANE</h1>
-            <p style="color: var(--neon-red); font-size: 0.8rem; margin-bottom: 20px;">[ ARCHITECT_MODE ]</p>
+        <div class="glass-card">
+            <h1 style="font-size: 3.5rem; color: #fff; text-shadow: 0 0 20px var(--neon-purple);">SUMAN NEUPANE</h1>
+            <p style="color: var(--galaxy-blue); letter-spacing: 5px; font-size: 0.7rem;">// NEURAL_LINK_ZENITH</p>
             
-            <div class="progress-box">
-                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 8px;">
-                    <span>STABILITY_LOAD: <span id="pct-text">0%</span></span>
-                    <span style="color: #ff3131;">WEBSITE UNDER PROGRESS</span>
+            <div class="prog-container">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:10px;">
+                    <span>STABILITY_LOAD: <span id="pct-val">0%</span></span>
+                    <span style="color: var(--magma-red);">YET TO COMPLETE</span>
                 </div>
-                <div class="bar-bg"><div class="bar-fill" id="main-bar"></div></div>
+                <div class="prog-bg"><div class="prog-fill" id="bar"></div></div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
-                <div>
-                    <h4 style="color: #555; margin-bottom: 10px;">SPECIALITY</h4>
-                    <p style="font-size: 0.9rem;">Flute, Guitar, Tabla, Harmonium</p>
-                    <p style="margin-top: 10px;"><span class="status-dot"></span> Status: Online</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="hud-item">
+                    <span style="color: var(--galaxy-blue); font-size: 0.7rem;">SPECIALITIES</span>
+                    <p style="font-size: 0.9rem; margin-top:5px;">Flute, Guitar, Tabla, Harmonium</p>
+                    <div style="margin-top:5px;"><span class="status-online">● STATUS: ONLINE</span></div>
                 </div>
-                <div>
-                    <h4 style="color: #555; margin-bottom: 10px;">ENVIRONMENT</h4>
-                    <p style="font-size: 0.9rem;">Ubuntu 26.04 LTS</p>
-                    <p style="color: var(--neon-red); font-size: 0.8rem; margin-top: 10px;">YET TO COMPLETE</p>
+                <div class="hud-item" style="border-color: var(--galaxy-blue);">
+                    <span style="color: var(--galaxy-blue); font-size: 0.7rem;">ENVIRONMENT</span>
+                    <p style="font-size: 0.9rem; margin-top:5px;">Ubuntu 26.04 LTS</p>
+                    <p style="color: var(--magma-red); font-size: 0.7rem; margin-top:5px;">WEBSITE UNDER PROGRESS</p>
                 </div>
             </div>
 
-            <button id="quantum-btn" style="margin-top: 40px; width: 100%; padding: 20px; background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); font-weight: bold; cursor: pointer;">ACTIVATE QUANTUM CONNECTION</button>
+            <button id="quantum-trigger" style="margin-top: 30px; width: 100%; padding: 18px; background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); font-weight: bold; cursor: pointer; transition: 0.3s;">ACTIVATE QUANTUM CONNECTION</button>
         </div>
     </div>
 
     <div class="right-col">
-        <div class="glass-panel game-card">
-            <h3 style="font-size: 0.8rem; margin-bottom: 15px; color: #666;">// NEURAL_SNAKE</h3>
-            <canvas id="snake-canvas" height="200"></canvas>
+        <div class="glass-card" style="margin-bottom: 20px;">
+            <h3 style="font-size: 0.7rem; color: var(--galaxy-blue); margin-bottom: 15px;">SNAKE_PROTOCOL.exe</h3>
+            <canvas id="snake-cvs" height="180"></canvas>
         </div>
-        <div class="glass-panel game-card">
-            <h3 style="font-size: 0.8rem; margin-bottom: 15px; color: #666;">// STRIKE_BOWLING</h3>
-            <canvas id="bowling-canvas" height="200"></canvas>
+        <div class="glass-card">
+            <h3 style="font-size: 0.7rem; color: var(--galaxy-blue); margin-bottom: 15px;">STRIKE_BOWLING.exe</h3>
+            <canvas id="bowl-cvs" height="180"></canvas>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. YouTube Setup
+    // 1. YouTube Audio Protocol
     let player;
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -160,115 +179,143 @@
         });
     }
 
-    // 2. Binary Flow & Ignition
-    const bin = document.getElementById('binary');
-    for(let i=0; i<500; i++) bin.innerText += Math.round(Math.random());
+    // 2. Vibration Ignition Logic
+    const bin = document.getElementById('bin-flow');
+    for(let i=0; i<1000; i++) bin.innerText += Math.floor(Math.random()*2);
 
-    const btn = document.getElementById('ignite-btn');
-    let holdTime = 0, isHolding = false;
+    const igniteBtn = document.getElementById('ignite-btn');
+    let hTime = 0, hActive = false;
 
-    btn.onmousedown = () => { isHolding = true; btn.classList.add('vibrate'); playSound(440, 'sawtooth'); };
-    window.onmouseup = () => { isHolding = false; holdTime = 0; btn.classList.remove('vibrate'); };
+    igniteBtn.onmousedown = () => { hActive = true; igniteBtn.classList.add('vibrate'); playFX(300, 'square'); };
+    window.onmouseup = () => { hActive = false; hTime = 0; igniteBtn.classList.remove('vibrate'); };
 
     setInterval(() => {
-        if(isHolding) {
-            holdTime += 3.3;
-            if(holdTime >= 100) triggerBlast();
+        if(hActive) {
+            hTime += 3.3;
+            if(hTime >= 100) startTask();
         }
     }, 100);
 
-    function triggerBlast() {
+    function startTask() {
+        hActive = false;
         document.getElementById('ignite-screen').style.display = 'none';
+        document.getElementById('task-overlay').style.display = 'flex';
+        initLenses();
+    }
+
+    // 3. Paparazzi Task
+    let lenses = 0;
+    function initLenses() {
+        const box = document.getElementById('lens-box');
+        for(let i=0; i<5; i++) {
+            const l = document.createElement('div');
+            l.className = 'lens';
+            l.style.left = Math.random()*80 + 10 + "%";
+            l.style.top = Math.random()*80 + 10 + "%";
+            l.onclick = () => {
+                l.remove(); lenses++;
+                flashEffect();
+                if(lenses === 5) openGalaxy();
+            };
+            box.appendChild(l);
+        }
+    }
+
+    function flashEffect() {
+        const f = document.getElementById('flash');
+        f.style.opacity = '1';
+        setTimeout(() => f.style.opacity = '0', 100);
+    }
+
+    function openGalaxy() {
+        document.getElementById('task-overlay').style.display = 'none';
         document.getElementById('main-ui').style.opacity = '1';
         player.playVideo();
-        startConfetti();
-        resetProgressBar();
+        runConfetti();
+        loopStability();
     }
 
-    // 3. Auto-Reset Progress Bar
-    function resetProgressBar() {
-        const bar = document.getElementById('main-bar');
-        const text = document.getElementById('pct-text');
-        
-        function run() {
-            bar.style.width = "63%";
-            text.innerText = "63%";
+    // 4. Advanced Stability Loop
+    function loopStability() {
+        const bar = document.getElementById('bar');
+        const pct = document.getElementById('pct-val');
+        function cycle() {
+            bar.style.width = "63%"; pct.innerText = "63%";
             setTimeout(() => {
-                bar.style.width = "0%";
-                text.innerText = "0%";
-                setTimeout(run, 5000);
-            }, 10000);
+                bar.style.width = "0%"; pct.innerText = "0%";
+                setTimeout(cycle, 4000);
+            }, 8000);
         }
-        run();
+        cycle();
     }
 
-    // 4. Confetti Engine
-    function startConfetti() {
-        for(let i=0; i<100; i++) {
+    // 5. Confetti Engine
+    function runConfetti() {
+        for(let i=0; i<80; i++) {
             const c = document.createElement('div');
             c.className = 'confetti';
-            c.style.left = Math.random() * 100 + "vw";
-            c.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
-            c.style.animationDelay = Math.random() * 2 + "s";
+            c.style.left = Math.random()*100 + "vw";
+            c.style.background = `hsl(${Math.random()*360}, 100%, 60%)`;
+            c.style.animationDelay = Math.random()*3 + "s";
             document.body.appendChild(c);
             setTimeout(() => c.remove(), 6000);
         }
     }
 
-    // 5. Quantum Love Connection
-    document.getElementById('quantum-btn').onclick = (e) => {
-        playSound(880, 'sine');
-        const msg = document.createElement('div');
-        msg.className = 'love-text';
-        msg.innerText = "I LOVE YOU";
-        msg.style.left = "50%"; msg.style.top = "50%";
-        msg.style.transform = "translate(-50%, -50%)";
-        msg.style.color = "var(--neon-red)";
-        document.body.appendChild(msg);
-        
-        setTimeout(() => {
-            msg.style.opacity = "0";
-            msg.style.transform = "translate(-50%, -50%) scale(2)";
-            setTimeout(() => msg.remove(), 1000);
-        }, 3000);
+    // 6. Quantum Love Evasion
+    document.getElementById('quantum-trigger').onclick = () => {
+        const l = document.createElement('div');
+        l.className = 'love-msg';
+        l.innerText = "I LOVE YOU";
+        l.style.left = "50%"; l.style.top = "50%";
+        l.style.transform = "translate(-50%, -50%)";
+        l.style.display = "block";
+        l.style.color = Math.random() > 0.5 ? "var(--neon-purple)" : "var(--galaxy-blue)";
+        document.body.appendChild(l);
+        setTimeout(() => { l.style.opacity = "0"; setTimeout(()=>l.remove(), 1000); }, 4000);
     };
 
-    // 6. Sound & Cursor
-    function playSound(f, type) {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = type; o.frequency.value = f;
-        o.connect(g); g.connect(ctx.destination);
-        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
-        o.start(); o.stop(ctx.currentTime + 1);
-    }
-
+    // Cursor & Evasion
     document.onmousemove = (e) => {
         const cur = document.getElementById('cursor');
         cur.style.left = e.clientX - 15 + 'px';
         cur.style.top = e.clientY - 15 + 'px';
         
-        // Letter evasion
-        document.querySelectorAll('.love-text').forEach(l => {
-            const dist = Math.hypot(e.clientX - window.innerWidth/2, e.clientY - window.innerHeight/2);
-            if(dist < 200) l.style.letterSpacing = "20px";
-            else l.style.letterSpacing = "2px";
+        document.querySelectorAll('.love-msg').forEach(m => {
+            const dx = e.clientX - window.innerWidth/2;
+            const dy = e.clientY - window.innerHeight/2;
+            const dist = Math.hypot(dx, dy);
+            if(dist < 200) {
+                m.style.transform = `translate(${-50 - dx/5}%, ${-50 - dy/5}%) scale(1.1)`;
+                m.style.letterSpacing = "15px";
+            } else {
+                m.style.letterSpacing = "2px";
+            }
         });
     };
 
-    // Games (Minimal Logic)
-    const sctx = document.getElementById('snake-canvas').getContext('2d');
-    setInterval(() => {
-        sctx.fillStyle = '#000'; sctx.fillRect(0,0,400,200);
-        sctx.fillStyle = 'var(--neon-red)'; sctx.fillRect(Math.random()*380, 50, 10, 10);
-    }, 200);
+    function playFX(f, type) {
+        const ctx = new AudioContext();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type; o.frequency.value = f;
+        o.connect(g); g.connect(ctx.destination);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        o.start(); o.stop(ctx.currentTime + 0.5);
+    }
 
-    const bctx = document.getElementById('bowling-canvas').getContext('2d');
+    // Games
+    const sc = document.getElementById('snake-cvs').getContext('2d');
     setInterval(() => {
-        bctx.fillStyle = '#000'; bctx.fillRect(0,0,400,200);
-        bctx.fillStyle = '#fff'; bctx.beginPath(); bctx.arc(200, Math.random()*150, 8, 0, 7); bctx.fill();
-    }, 300);
+        sc.fillStyle = '#05010a'; sc.fillRect(0,0,400,200);
+        sc.fillStyle = 'var(--neon-purple)'; sc.fillRect(Math.random()*350, 40, 10, 10);
+    }, 150);
+
+    const bc = document.getElementById('bowl-cvs').getContext('2d');
+    setInterval(() => {
+        bc.fillStyle = '#05010a'; bc.fillRect(0,0,400,200);
+        bc.fillStyle = '#fff'; bc.beginPath(); bc.arc(200, Math.random()*150, 8, 0, 7); bc.fill();
+    }, 400);
 
 </script>
 </body>
