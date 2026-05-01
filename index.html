@@ -1,250 +1,894 @@
+<!--
+Dhurandhar Genesis X // Ultimate Personal Machine Portfolio
+FULL RESPONSIVE + MUSIC + DJ MIXER + ADVANCED UI
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suman | Dhurandhar Genesis</title>
-    <style>
-        :root {
-            --bg: #050200;
-            --ember: #ff4500;
-            --magma: #ff8c00;
-            --machine-gray: #1a1a1a;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
-        body { 
-            background: var(--bg); color: #fff; 
-            font-family: 'Courier New', monospace; overflow: hidden; 
-            height: 100vh;
-        }
+<title>Suman | Dhurandhar Genesis X</title>
 
-        /* === ADVANCED MACHINE CURSOR === */
-        #cursor-main {
-            position: fixed; width: 40px; height: 40px; border: 1px solid var(--ember);
-            pointer-events: none; z-index: 20000; transition: transform 0.1s ease;
-        }
-        #cursor-dot {
-            position: fixed; width: 4px; height: 4px; background: #fff;
-            border-radius: 50%; pointer-events: none; z-index: 20001;
-        }
-        .cursor-ring {
-            position: fixed; border: 1px dashed var(--magma); border-radius: 50%;
-            pointer-events: none; z-index: 19999; animation: rotate 4s linear infinite;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+<style>
 
-        /* === 3S IGNITION & BLAST === */
-        #ignite-screen {
-            position: fixed; inset: 0; background: #000; z-index: 30000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .loading-text { font-size: 5rem; font-weight: 900; color: #111; position: absolute; z-index: -1; }
-        #hold-btn {
-            width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--ember);
-            background: transparent; color: var(--ember); font-weight: bold; cursor: pointer;
-            position: relative; overflow: hidden;
-        }
-        #hold-progress {
-            position: absolute; bottom: 0; left: 0; width: 100%; background: var(--ember);
-            height: 0%; transition: 0.1s linear; opacity: 0.5;
-        }
+:root{
+    --bg:#060816;
+    --bg2:#0d1226;
+    --cyan:#00f0ff;
+    --pink:#ff00ea;
+    --purple:#7d4dff;
+    --glass:rgba(255,255,255,0.05);
+    --line:rgba(255,255,255,0.12);
+    --white:#fff;
+}
 
-        #blast-flash {
-            position: fixed; inset: 0; background: #fff; opacity: 0; z-index: 30001; pointer-events: none;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    cursor:none;
+}
 
-        /* === UI ELEMENTS === */
-        .wrapper { 
-            width: 95%; max-width: 1200px; margin: 0 auto; padding: 20px; 
-            display: grid; grid-template-columns: 1fr 350px; gap: 20px; opacity: 0; transition: 1s;
-        }
+body{
+    overflow:hidden;
+    background:
+    radial-gradient(circle at top left,#1b0042,#060816 60%);
+    color:white;
+    font-family:'Orbitron',sans-serif;
+    height:100vh;
+}
 
-        .main-panel { background: rgba(10,5,0,0.9); border: 1px solid var(--ember); padding: 30px; position: relative; }
-        
-        /* Advanced Progress Bar */
-        .adv-progress-wrap { margin: 20px 0; border: 1px solid #333; padding: 4px; border-radius: 20px; }
-        .adv-progress-bar { 
-            height: 12px; background: linear-gradient(90deg, var(--ember), #fff); 
-            width: 63%; border-radius: 10px; position: relative;
-            box-shadow: 0 0 15px var(--ember);
-        }
-        
-        /* Special Button & Love Graphics */
-        #special-btn {
-            background: transparent; border: 1px solid var(--magma); color: var(--magma);
-            padding: 10px 20px; margin-top: 20px; font-weight: bold; transition: 0.3s;
-        }
-        #special-btn:hover { background: var(--magma); color: #000; }
-        
-        .love-msg { 
-            position: fixed; pointer-events: none; font-size: 2rem; z-index: 15000; 
-            transition: 0.2s linear; display: none; 
-        }
+/* =========================
+BACKGROUND
+========================= */
 
-        /* Games & Status */
-        .status-box { font-size: 0.8rem; line-height: 2; border-top: 1px solid #222; margin-top: 20px; padding-top: 10px;}
-        .yet-to-complete { color: #ff0000; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+#bg{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+}
 
-        #yt-audio { position: absolute; top: -999px; }
+/* =========================
+MACHINE CURSOR
+========================= */
 
-    </style>
+#cursor{
+    width:45px;
+    height:45px;
+    border:1px solid var(--cyan);
+    border-radius:50%;
+    position:fixed;
+    pointer-events:none;
+    z-index:999999;
+    backdrop-filter:blur(5px);
+    box-shadow:
+    0 0 20px var(--cyan),
+    inset 0 0 10px var(--cyan);
+}
+
+#cursor::before{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border:1px dashed var(--pink);
+    border-radius:50%;
+    animation:spin 5s linear infinite;
+}
+
+#cursor-dot{
+    width:6px;
+    height:6px;
+    background:white;
+    border-radius:50%;
+    position:fixed;
+    pointer-events:none;
+    z-index:9999999;
+    box-shadow:0 0 10px white;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* =========================
+BOOT
+========================= */
+
+#boot{
+    position:fixed;
+    inset:0;
+    background:black;
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#boot::before{
+    content:"";
+    position:absolute;
+    width:300%;
+    height:300%;
+    background:
+    radial-gradient(circle,var(--cyan),transparent 20%);
+    opacity:.08;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    50%{
+        transform:scale(1.2);
+    }
+}
+
+#loaderText{
+    position:absolute;
+    font-size:8rem;
+    font-weight:900;
+    color:#101010;
+    letter-spacing:10px;
+}
+
+#igniteBtn{
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    border:none;
+    position:relative;
+    overflow:hidden;
+    background:
+    linear-gradient(
+    145deg,
+    rgba(0,240,255,.2),
+    rgba(255,0,234,.15)
+    );
+    backdrop-filter:blur(20px);
+    box-shadow:
+    0 0 40px rgba(0,240,255,.5),
+    0 0 80px rgba(255,0,234,.2);
+
+    color:white;
+    font-size:1rem;
+    font-weight:900;
+    transition:.2s;
+}
+
+#igniteBtn:hover{
+    transform:scale(1.08);
+}
+
+#igniteFill{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:0%;
+    background:
+    linear-gradient(
+    to top,
+    var(--cyan),
+    var(--pink)
+    );
+    opacity:.4;
+}
+
+#igniteRing{
+    position:absolute;
+    inset:-10px;
+    border:2px solid var(--cyan);
+    border-radius:50%;
+    animation:ringPulse 1.5s infinite;
+}
+
+@keyframes ringPulse{
+    50%{
+        transform:scale(1.08);
+        opacity:.4;
+    }
+}
+
+/* =========================
+BLAST
+========================= */
+
+#flash{
+    position:fixed;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+    z-index:99999;
+    transition:.4s;
+}
+
+/* =========================
+MAIN
+========================= */
+
+#main{
+    opacity:0;
+    transition:1.2s;
+    width:95%;
+    margin:auto;
+    padding-top:25px;
+    display:grid;
+    grid-template-columns:1fr 360px;
+    gap:20px;
+}
+
+.panel{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line);
+    backdrop-filter:blur(18px);
+    border-radius:25px;
+    padding:25px;
+    position:relative;
+    overflow:hidden;
+}
+
+.panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,.05),
+    transparent
+    );
+    animation:shine 4s linear infinite;
+}
+
+@keyframes shine{
+    from{
+        transform:translateX(-100%);
+    }
+    to{
+        transform:translateX(200%);
+    }
+}
+
+h1{
+    font-size:4rem;
+    background:
+    linear-gradient(
+    90deg,
+    var(--cyan),
+    white,
+    var(--pink)
+    );
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+/* =========================
+LIVE BAR
+========================= */
+
+.progress-wrap{
+    margin-top:30px;
+}
+
+.progress-track{
+    height:20px;
+    background:rgba(255,255,255,.05);
+    border-radius:50px;
+    overflow:hidden;
+    position:relative;
+}
+
+.progress{
+    height:100%;
+    width:63%;
+    border-radius:50px;
+    background:
+    linear-gradient(
+    90deg,
+    var(--cyan),
+    var(--pink),
+    var(--purple)
+    );
+    box-shadow:
+    0 0 20px var(--cyan),
+    0 0 30px var(--pink);
+    position:relative;
+}
+
+.progress::after{
+    content:"";
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    position:absolute;
+    right:-10px;
+    top:-5px;
+    background:white;
+    box-shadow:0 0 20px white;
+}
+
+/* =========================
+DJ MIXER
+========================= */
+
+.dj{
+    margin-top:30px;
+}
+
+.dj-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    height:120px;
+}
+
+.bar{
+    width:14px;
+    background:
+    linear-gradient(
+    to top,
+    var(--cyan),
+    var(--pink)
+    );
+    border-radius:20px;
+    animation:beat 1s infinite ease-in-out;
+}
+
+.bar:nth-child(odd){
+    animation-duration:.7s;
+}
+
+.bar:nth-child(even){
+    animation-duration:1.2s;
+}
+
+@keyframes beat{
+    0%,100%{height:20px;}
+    50%{height:100px;}
+}
+
+/* =========================
+LOVE
+========================= */
+
+#loveBtn{
+    margin-top:25px;
+    padding:16px 30px;
+    border:none;
+    border-radius:50px;
+    background:
+    linear-gradient(
+    90deg,
+    var(--pink),
+    var(--purple)
+    );
+    color:white;
+    font-weight:bold;
+    transition:.3s;
+}
+
+#loveBtn:hover{
+    transform:scale(1.08);
+}
+
+.love{
+    position:fixed;
+    font-size:2rem;
+    pointer-events:none;
+    transition:.15s linear;
+    z-index:999;
+}
+
+/* =========================
+CARDS
+========================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-top:25px;
+}
+
+.card{
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:18px;
+}
+
+.red{
+    color:red;
+    animation:blink .8s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:.3;
+    }
+}
+
+/* =========================
+RIGHT SIDE
+========================= */
+
+canvas{
+    width:100%;
+    border-radius:20px;
+    background:black;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.sidebox{
+    margin-top:15px;
+    padding:15px;
+    border-radius:18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+    body{
+        overflow:auto;
+    }
+
+    #main{
+        grid-template-columns:1fr;
+        padding-bottom:50px;
+    }
+
+    h1{
+        font-size:2.7rem;
+    }
+
+}
+
+</style>
 </head>
+
 <body>
 
-<div id="cursor-main"></div>
+<canvas id="bg"></canvas>
+
+<div id="cursor"></div>
 <div id="cursor-dot"></div>
-<div class="cursor-ring" style="width: 60px; height: 60px;"></div>
 
-<div id="blast-flash"></div>
+<div id="flash"></div>
 
-<div id="ignite-screen">
-    <div class="loading-text" id="loader-pct">000</div>
-    <button id="hold-btn">
-        <div id="hold-progress"></div>
-        START
+<!-- =========================
+BOOT
+========================= -->
+
+<div id="boot">
+
+    <div id="loaderText">000</div>
+
+    <button id="igniteBtn">
+
+        <div id="igniteRing"></div>
+        <div id="igniteFill"></div>
+
+        HOLD TO IGNITE
+
     </button>
-    <p style="margin-top: 20px; color: #333; font-size: 0.7rem; letter-spacing: 5px;">GALAXY BOOK 5 ENGINE</p>
+
+    <p style="margin-top:30px;color:#555;letter-spacing:5px;">
+        GALAXY BOOK 5 ENGINE
+    </p>
+
 </div>
 
-<div id="yt-audio"></div>
+<!-- =========================
+MAIN WEBSITE
+========================= -->
 
-<div class="wrapper" id="main-ui">
-    <div class="main-panel">
-        <h1 style="font-size: 3rem; color: var(--ember);">SUMAN NEUPANE</h1>
-        <p style="color: #666;">// DHURANDHAR_GENESIS_v5.0</p>
-        
-        <div class="adv-progress-wrap">
-            <div class="adv-progress-bar"></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
-            <span>SYSTEM SYNC: 63%</span>
-            <span>OS: UBUNTU 26.04 LTS</span>
+<div id="main">
+
+    <!-- LEFT -->
+    <div class="panel">
+
+        <h1>SUMAN NEUPANE</h1>
+
+        <div style="color:#888;margin-top:5px;">
+            // DHURANDHAR GENESIS X
         </div>
 
-        <button id="special-btn" onclick="initLove()">ACTIVATE CORE_EMOTION</button>
-        
-        <div class="status-box">
-            <div>[ST] FLUTE_G_BASS: ONLINE</div>
-            <div>[ST] HARDWARE_STORE_INV: SYNCED</div>
-            <div>[ST] NEB_EXAMS: <span class="yet-to-complete">YET TO COMPLETE</span></div>
+        <!-- LIVE BAR -->
+        <div class="progress-wrap">
+
+            <div style="
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:10px;
+            font-size:.8rem;">
+
+                <span id="syncText">SYSTEM SYNC : 63%</span>
+                <span>UBUNTU 26.04</span>
+
+            </div>
+
+            <div class="progress-track" id="track">
+                <div class="progress" id="progress"></div>
+            </div>
+
         </div>
+
+        <!-- LOVE -->
+        <button id="loveBtn">
+            ACTIVATE CORE_EMOTION
+        </button>
+
+        <!-- DJ -->
+        <div class="dj">
+
+            <div style="margin-bottom:10px;">
+                LIVE AUDIO MIXER
+            </div>
+
+            <div class="dj-bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+        </div>
+
+        <!-- CARDS -->
+        <div class="grid">
+
+            <div class="card">
+                FLUTE_G_BASS : ONLINE
+            </div>
+
+            <div class="card">
+                AI_PROTOCOL : ACTIVE
+            </div>
+
+            <div class="card">
+                KATHMANDU_NODE : CONNECTED
+            </div>
+
+            <div class="card">
+                NEB_EXAMS :
+                <span class="red">
+                    YET TO COMPLETE
+                </span>
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="main-panel" style="display: flex; flex-direction: column; gap: 15px;">
-        <h3 style="color: var(--magma); border-bottom: 1px solid #333;">TASK_MODULE</h3>
-        <canvas id="snake-cvs" width="300" height="250" style="background:#000; border: 1px solid #111;"></canvas>
-        <p style="font-size: 0.6rem; color: #444;">MADE WITH GALAXY BOOK 5 ENGINE // KATHMANDU_NODE</p>
+    <!-- RIGHT -->
+    <div class="panel">
+
+        <canvas id="snake" width="300" height="250"></canvas>
+
+        <div class="sidebox">
+            MACHINE STATUS : STABLE
+        </div>
+
+        <div class="sidebox">
+            BUILT WITH GALAXY BOOK 5 ENGINE
+        </div>
+
+        <div class="sidebox">
+            LOCATION : KATHMANDU NODE
+        </div>
+
     </div>
+
 </div>
+
+<!-- MUSIC -->
+<audio id="music" loop>
+    <source src="https://files.catbox.moe/3xqz7r.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-    let player;
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
 
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('yt-audio', {
-            height: '0', width: '0', videoId: 'OgPRcW4ytmE',
-            playerVars: { 'start': 10, 'loop': 1, 'playlist': 'OgPRcW4ytmE' }
-        });
-    }
+/* =========================
+CURSOR
+========================= */
 
-    // 1. 3-Second Blast Ignition
-    const holdBtn = document.getElementById('hold-btn');
-    const holdProg = document.getElementById('hold-progress');
-    const loaderPct = document.getElementById('loader-pct');
-    let holdActive = false, holdVal = 0;
+const cursor = document.getElementById("cursor");
+const dot = document.getElementById("cursor-dot");
 
-    holdBtn.onmousedown = () => { holdActive = true; };
-    window.onmouseup = () => { holdActive = false; holdVal = 0; updateHold(); };
+document.addEventListener("mousemove",(e)=>{
 
-    setInterval(() => {
-        if(holdActive && holdVal < 100) {
-            holdVal += 1.1; // Approx 3 seconds
-            updateHold();
-            if(holdVal >= 100) triggerBlast();
+    cursor.style.left = e.clientX - 22 + "px";
+    cursor.style.top = e.clientY - 22 + "px";
+
+    dot.style.left = e.clientX - 3 + "px";
+    dot.style.top = e.clientY - 3 + "px";
+
+    cursor.style.transform =
+    `scale(${1 + Math.random()*0.08}) rotate(${e.clientX/10}deg)`;
+
+    document.querySelectorAll(".love").forEach(el=>{
+
+        const r = el.getBoundingClientRect();
+
+        const dx = e.clientX - r.left;
+        const dy = e.clientY - r.top;
+
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if(dist < 120){
+
+            el.style.transform =
+            `translate(${-dx*.4}px,${-dy*.4}px)`;
+
         }
-    }, 30);
 
-    function updateHold() {
-        holdProg.style.height = holdVal + "%";
-        loaderPct.innerText = Math.floor(holdVal).toString().padStart(3, '0');
-    }
-
-    function triggerBlast() {
-        holdActive = false;
-        // Sound
-        const ac = new AudioContext();
-        const osc = ac.createOscillator();
-        const g = ac.createGain();
-        osc.type = 'brownian'; // Noise for blast
-        osc.connect(g); g.connect(ac.destination);
-        g.gain.setValueAtTime(1, ac.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 1);
-        osc.start(); osc.stop(ac.currentTime + 1);
-
-        document.getElementById('blast-flash').style.opacity = '1';
-        setTimeout(() => {
-            document.getElementById('ignite-screen').style.display = 'none';
-            document.getElementById('blast-flash').style.opacity = '0';
-            document.getElementById('main-ui').style.opacity = '1';
-            document.body.style.overflow = 'auto';
-            player.playVideo();
-        }, 200);
-    }
-
-    // 2. Responsive Machine Cursor
-    const cm = document.getElementById('cursor-main');
-    const cd = document.getElementById('cursor-dot');
-    const cr = document.querySelector('.cursor-ring');
-    document.addEventListener('mousemove', (e) => {
-        const { clientX: x, clientY: y } = e;
-        cm.style.transform = `translate(${x - 20}px, ${y - 20}px) rotate(${x/5}deg)`;
-        cd.style.left = x - 2 + 'px'; cd.style.top = y - 2 + 'px';
-        cr.style.left = x - 30 + 'px'; cr.style.top = y - 30 + 'px';
-        
-        // Letter evasion
-        document.querySelectorAll('.love-msg').forEach(msg => {
-            const r = msg.getBoundingClientRect();
-            const d = Math.hypot(x - r.left, y - r.top);
-            if(d < 100) {
-                msg.style.transform = `translate(${(r.left - x)*2}px, ${(r.top - y)*2}px)`;
-                msg.style.opacity = '0.5';
-            }
-        });
     });
 
-    // 3. Special Love Button
-    function initLove() {
-        const texts = ['🧸', 'I', 'L', 'O', 'V', 'E', 'Y', 'O', 'U'];
-        texts.forEach((t, i) => {
-            const el = document.createElement('div');
-            el.className = 'love-msg';
-            el.style.display = 'block';
-            el.innerText = t;
-            el.style.left = (40 + i*5) + '%';
-            el.style.top = '50%';
-            el.style.color = i === 0 ? 'white' : 'var(--ember)';
-            document.body.appendChild(el);
-            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 1000); }, 5000);
-        });
+});
+
+/* =========================
+BACKGROUND PARTICLES
+========================= */
+
+const bg = document.getElementById("bg");
+const ctx = bg.getContext("2d");
+
+bg.width = innerWidth;
+bg.height = innerHeight;
+
+let particles = [];
+
+for(let i=0;i<150;i++){
+
+    particles.push({
+
+        x:Math.random()*bg.width,
+        y:Math.random()*bg.height,
+        r:Math.random()*2,
+        s:Math.random()*1.5
+
+    });
+
+}
+
+function animateBG(){
+
+    ctx.clearRect(0,0,bg.width,bg.height);
+
+    particles.forEach(p=>{
+
+        p.y += p.s;
+
+        if(p.y > bg.height){
+
+            p.y = 0;
+            p.x = Math.random()*bg.width;
+
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+
+        ctx.fillStyle =
+        `rgba(0,240,255,.7)`;
+
+        ctx.fill();
+
+    });
+
+    requestAnimationFrame(animateBG);
+
+}
+
+animateBG();
+
+/* =========================
+IGNITE
+========================= */
+
+const btn = document.getElementById("igniteBtn");
+const fill = document.getElementById("igniteFill");
+const text = document.getElementById("loaderText");
+
+let holding = false;
+let progress = 0;
+
+btn.addEventListener("mousedown",()=>holding=true);
+
+window.addEventListener("mouseup",()=>{
+
+    holding=false;
+    progress=0;
+
+});
+
+setInterval(()=>{
+
+    if(holding){
+
+        progress += 1;
+
+        fill.style.height = progress + "%";
+
+        text.innerText =
+        String(progress).padStart(3,"0");
+
+        if(progress >= 100){
+
+            openWebsite();
+
+        }
+
+    }else{
+
+        fill.style.height = "0%";
+        text.innerText = "000";
+
     }
 
-    // 4. Snake Task
-    const scc = document.getElementById('snake-cvs');
-    const sctx = scc.getContext('2d');
-    let snk = [{x:10, y:10}], fd = {x:5, y:5};
-    setInterval(() => {
-        let h = {x: snk[0].x+1, y: snk[0].y};
-        snk.unshift(h); snk.pop();
-        if(h.x > 20) snk = [{x:0, y:10}];
-        sctx.fillStyle = '#000'; sctx.fillRect(0,0,300,250);
-        sctx.fillStyle = 'var(--ember)'; snk.forEach(p => sctx.fillRect(p.x*15, p.y*15, 13, 13));
-    }, 150);
+},30);
+
+/* =========================
+OPEN WEBSITE
+========================= */
+
+function openWebsite(){
+
+    document.getElementById("flash").style.opacity="1";
+
+    setTimeout(()=>{
+
+        document.getElementById("boot").style.display="none";
+
+        document.getElementById("main").style.opacity="1";
+
+        document.getElementById("music").play();
+
+        document.getElementById("flash").style.opacity="0";
+
+    },500);
+
+}
+
+/* =========================
+DRAGGABLE PROGRESS
+========================= */
+
+const track = document.getElementById("track");
+const prog = document.getElementById("progress");
+const syncText = document.getElementById("syncText");
+
+track.addEventListener("mousemove",(e)=>{
+
+    if(e.buttons !== 1) return;
+
+    const rect = track.getBoundingClientRect();
+
+    let x = e.clientX - rect.left;
+
+    let percent = (x / rect.width) * 100;
+
+    percent = Math.max(0,Math.min(100,percent));
+
+    prog.style.width = percent + "%";
+
+    syncText.innerText =
+    `SYSTEM SYNC : ${Math.floor(percent)}%`;
+
+});
+
+/* =========================
+LOVE
+========================= */
+
+document.getElementById("loveBtn")
+.addEventListener("click",()=>{
+
+    const arr = [
+        "🧸","❤️","I","LOVE","YOU",
+        "✨","💖","🌌"
+    ];
+
+    arr.forEach((t,i)=>{
+
+        const el = document.createElement("div");
+
+        el.className = "love";
+
+        el.innerText = t;
+
+        el.style.left =
+        45 + Math.random()*10 + "%";
+
+        el.style.top =
+        45 + Math.random()*10 + "%";
+
+        document.body.appendChild(el);
+
+        let dx = (Math.random()-.5)*500;
+        let dy = (Math.random()-.5)*500;
+
+        setTimeout(()=>{
+
+            el.style.transform =
+            `translate(${dx}px,${dy}px) scale(1.6)`;
+
+            el.style.opacity = "0";
+
+        },100);
+
+        setTimeout(()=>el.remove(),4000);
+
+    });
+
+});
+
+/* =========================
+SNAKE
+========================= */
+
+const cvs = document.getElementById("snake");
+const sctx = cvs.getContext("2d");
+
+let snake = [{x:10,y:10}];
+
+function drawSnake(){
+
+    sctx.fillStyle = "#000";
+    sctx.fillRect(0,0,300,250);
+
+    snake.unshift({
+        x:snake[0].x+1,
+        y:snake[0].y
+    });
+
+    snake.pop();
+
+    if(snake[0].x > 20){
+
+        snake = [{x:0,y:10}];
+
+    }
+
+    snake.forEach((p,i)=>{
+
+        sctx.fillStyle =
+        i===0 ? "#fff" : "#00f0ff";
+
+        sctx.shadowBlur = 20;
+        sctx.shadowColor = "#00f0ff";
+
+        sctx.fillRect(
+            p.x*14,
+            p.y*14,
+            12,
+            12
+        );
+
+    });
+
+}
+
+setInterval(drawSnake,100);
+
 </script>
+
 </body>
 </html>
