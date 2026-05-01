@@ -3,262 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suman | Dhurandhar Protocol</title>
+    <title>Suman | Dhurandhar Magma v4</title>
     <style>
         :root {
-            --bg: #0a0500;
+            --bg: #080400;
             --ember: #ff4500;
             --magma: #ff8c00;
-            --glass: rgba(20, 10, 0, 0.85);
-            --border: 1px solid rgba(255, 69, 0, 0.4);
+            --glass: rgba(25, 10, 0, 0.9);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
-        body { 
-            background: var(--bg); 
-            color: #fff; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
 
-        /* === DHURANDHAR CURSOR === */
+        /* === CURSOR === */
         #custom-cursor {
-            position: fixed; width: 12px; height: 12px; background: var(--ember);
+            position: fixed; width: 10px; height: 10px; background: #fff;
             border-radius: 50%; pointer-events: none; z-index: 10000;
-            box-shadow: 0 0 25px var(--ember), 0 0 50px var(--magma); transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px var(--ember); transform: translate(-50%, -50%);
         }
 
-        /* === AMBIENT BACKGROUND === */
-        #glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle 300px at var(--x, 0) var(--y, 0), rgba(255, 69, 0, 0.1), transparent);
-            pointer-events: none; z-index: 9999;
+        /* === IGNITION OVERLAY (5s Hold) === */
+        #ignite-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 20000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        canvas#bg-embers { position: fixed; top: 0; left: 0; z-index: -1; }
+        .hold-container { position: relative; width: 150px; height: 150px; }
+        .progress-ring {
+            position: absolute; top: 0; left: 0; width: 150px; height: 150px;
+            transform: rotate(-90deg);
+        }
+        .progress-ring circle {
+            fill: transparent; stroke: var(--ember); stroke-width: 8;
+            stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.1s linear;
+        }
+        #ignite-btn {
+            position: absolute; inset: 15px; border-radius: 50%; border: none;
+            background: #111; color: var(--ember); font-weight: 900; cursor: pointer;
+        }
 
-        /* === AUTH OVERLAY === */
-        #task-overlay {
-            position: fixed; inset: 0; background: #000;
-            z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* === DJ VISUALIZER === */
+        .dj-mixer {
+            display: flex; align-items: flex-end; gap: 3px; height: 50px; padding: 10px;
+            background: rgba(0,0,0,0.5); border-radius: 10px; border: 1px solid var(--ember);
         }
-        .igniter {
-            width: 100px; height: 100px; border: 2px solid var(--ember);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.5s; font-weight: 800; color: var(--ember);
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+        .bar { width: 6px; background: var(--ember); height: 10px; animation: bounce 0.5s ease-in-out infinite alternate; }
+        @keyframes bounce { 
+            0% { height: 5px; filter: brightness(1); } 
+            100% { height: 40px; filter: brightness(1.5); box-shadow: 0 0 10px var(--ember); }
         }
-        .igniter:hover { background: var(--ember); color: #000; box-shadow: 0 0 50px var(--ember); }
 
-        /* === UI LAYOUT === */
-        .wrapper { width: 92%; max-width: 1200px; margin: 0 auto; padding: 40px 0; display: flex; flex-direction: column; gap: 30px; }
+        /* === PROGRESS BAR === */
+        .progress-container { width: 100%; background: #111; height: 10px; border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { width: 63%; height: 100%; background: linear-gradient(90deg, var(--ember), var(--magma)); }
+
+        /* === TASK LOCK === */
+        .lock-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        }
+        .lens-task { width: 40px; height: 40px; border: 2px solid #fff; border-radius: 50%; cursor: pointer; position: absolute; }
+
+        .wrapper { width: 90%; max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .card { background: var(--glass); border: 1px solid rgba(255,69,0,0.3); padding: 20px; position: relative; margin-bottom: 20px; }
         
-        .header {
-            display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding: 40px;
-            background: var(--glass); border-radius: 5px; border-left: 5px solid var(--ember);
-            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-        }
+        canvas.game-cvs { width: 100%; background: #000; height: 250px; }
 
-        .profile-frame {
-            width: 200px; height: 200px; border: 1px solid var(--ember);
-            padding: 10px; background: rgba(255,69,0,0.05);
-        }
-        #profile-img { width: 100%; height: 100%; object-fit: cover; grayscale: 1; transition: 0.5s; }
-        #profile-img:hover { grayscale: 0; filter: contrast(1.2) sepia(0.5); }
-
-        /* === GAME GRID === */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
-        .card { 
-            background: var(--glass); padding: 25px; border: var(--border); 
-            position: relative; overflow: hidden; transition: 0.3s;
-        }
-        .card:hover { border-color: var(--magma); background: rgba(40, 20, 0, 0.9); }
-        .card h3 { color: var(--ember); margin-bottom: 15px; letter-spacing: 2px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,69,0,0.2); padding-bottom: 10px;}
-
-        /* Canvas Games */
-        canvas.game-cvs { background: #050505; display: block; margin: 0 auto; border: 1px solid #222; width: 100%; }
-
-        /* Flee Button Zone */
-        .flee-zone { height: 180px; position: relative; background: #050505; border-radius: 4px; }
-        #flee-btn { 
-            position: absolute; padding: 8px 16px; background: var(--ember); color: #000;
-            border: none; font-weight: 900; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            transition: 0.1s linear;
-        }
-
-        .tag { color: var(--magma); font-weight: bold; opacity: 0.8; }
-        
-        #yt-player { position: absolute; top: -999px; visibility: hidden; }
-
-        @media (max-width: 768px) {
-            .header { grid-template-columns: 1fr; text-align: center; padding: 20px; }
-            .profile-frame { margin: 0 auto; }
-            h1 { font-size: 2.5rem !important; }
-        }
+        #yt-audio { position: absolute; top: -999px; visibility: hidden; }
     </style>
 </head>
 <body>
 
-<div id="glow"></div>
 <div id="custom-cursor"></div>
-<canvas id="bg-embers"></canvas>
 
-<!-- Hidden YouTube Audio -->
-<div id="yt-player">
-    <iframe id="music-frame" width="10" height="10" 
-    src="https://www.youtube.com/embed/OgPRcW4ytmE?enablejsapi=1&loop=1&playlist=OgPRcW4ytmE" 
-    allow="autoplay"></iframe>
+<!-- Hold to Ignite -->
+<div id="ignite-overlay">
+    <div class="hold-container">
+        <svg class="progress-ring"><circle id="ring-circle" cx="75" cy="75" r="70"></circle></svg>
+        <button id="ignite-btn">HOLD 5S</button>
+    </div>
+    <p style="margin-top: 20px; color: #555; letter-spacing: 3px;">INITIALIZING DHURANDHAR MODULE</p>
 </div>
 
-<!-- Initial Entry -->
-<div id="task-overlay">
-    <div class="igniter" onclick="igniteSystem()">IGNITE</div>
-    <p style="margin-top: 20px; color: #444; letter-spacing: 5px;">DHURANDHAR PROTOCOL v3.0</p>
-</div>
+<div id="yt-audio"></div>
 
 <div class="wrapper">
-    <div class="header">
-        <div class="profile-frame">
-            <img src="suman.jpg" id="profile-img" alt="Suman">
-        </div>
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 style="font-size: 3.5rem; color: #fff; text-transform: uppercase;">Suman Neupane</h1>
-            <p style="color: var(--ember); margin-bottom: 20px;">// SYSTEM_ARCHITECT & MUSICIAN</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
-                <div><span class="tag">OS:</span> Ubuntu Linux</div>
-                <div><span class="tag">GEAR:</span> G-Bass Flute</div>
-                <div><span class="tag">NODE:</span> Kathmandu, Nepal</div>
-                <div><span class="tag">TECH:</span> AI / ML Roadmap</div>
-            </div>
+            <h2 style="color: var(--magma);">SUMAN NEUPANE</h2>
+            <div class="progress-container"><div class="progress-fill"></div></div>
+            <span style="font-size: 0.7rem; color: var(--ember);">SYSTEM STABILITY: 63%</span>
+        </div>
+        <div class="dj-mixer" id="mixer">
+            <!-- Bars generated by JS -->
         </div>
     </div>
 
-    <div class="grid">
-        <!-- Snake -->
-        <div class="card">
-            <h3>[01] NEURAL_SNAKE.EXE</h3>
-            <canvas id="snake-canvas" class="game-cvs" width="300" height="300"></canvas>
+    <div class="card" id="game-container">
+        <div class="lock-overlay" id="lock">
+            <h3 style="margin-bottom: 10px;">TASK: DESTROY 3 LENSES</h3>
+            <div id="task-area" style="position: relative; width: 100%; height: 200px;"></div>
         </div>
-
-        <!-- Flee -->
-        <div class="card">
-            <h3>[02] KINETIC_ESCAPE.SYS</h3>
-            <div class="flee-zone" id="flee-zone">
-                <button id="flee-btn">TARGET</button>
-            </div>
-        </div>
-
-        <!-- Core Log -->
-        <div class="card">
-            <h3>[03] ACTIVE_MODULES</h3>
-            <ul style="list-style: none; font-size: 0.9rem; line-height: 2.2;">
-                <li>🔥 Rocket League Strategy Session</li>
-                <li>🔥 G-Bass Flute: Bollywood Soul</li>
-                <li>🔥 Guitar Chord Progression</li>
-                <li>🔥 Badminton / Football Drills</li>
-                <li>🔥 Hardware Store Inventory Sync</li>
-            </ul>
-            <button onclick="spawnEmbers()" style="margin-top: 20px; width: 100%; padding: 12px; background: var(--ember); border: none; font-weight: bold; color: #000; cursor: pointer;">MANUAL_OVERLOAD</button>
-        </div>
+        <h3 style="color: var(--ember); margin-bottom: 15px;">NEURAL_SNAKE_V4</h3>
+        <canvas id="snake-canvas" class="game-cvs" width="400" height="400"></canvas>
     </div>
 
-    <p style="text-align: center; color: #222; font-size: 0.7rem; margin-top: 50px;">DHURANDHAR ENGINE // POWERED BY UBUNTU 26.04</p>
+    <div class="card">
+        <button onclick="boom('conf')" style="padding: 15px; background: var(--ember); border: none; font-weight: bold; cursor: pointer;">POP CONFETTI</button>
+        <button onclick="boom('flower')" style="padding: 15px; background: var(--magma); border: none; font-weight: bold; cursor: pointer;">BOOM FLOWERS</button>
+    </div>
 </div>
 
 <script>
-    // --- SYSTEM IGNITION ---
-    function igniteSystem() {
-        const frame = document.getElementById('music-frame');
-        frame.src += "&autoplay=1";
-        document.getElementById('task-overlay').style.display = 'none';
-        spawnEmbers();
-    }
+    // 1. YouTube API Control
+    let player;
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
 
-    // --- CURSOR ---
-    const cursor = document.getElementById('custom-cursor');
-    const glow = document.getElementById('glow');
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        glow.style.setProperty('--x', e.clientX + 'px');
-        glow.style.setProperty('--y', e.clientY + 'px');
-    });
-
-    // --- EMBER BACKGROUND ---
-    const canvas = document.getElementById('bg-embers');
-    const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.onresize = resize; resize();
-
-    let particles = Array(50).fill().map(() => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        v: Math.random() * 2 + 0.5,
-        s: Math.random() * 2
-    }));
-
-    function drawEmbers() {
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.y -= p.v;
-            if(p.y < 0) p.y = canvas.height;
-            ctx.fillStyle = "rgba(255, 69, 0, 0.3)";
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('yt-audio', {
+            height: '0', width: '0',
+            videoId: 'OgPRcW4ytmE',
+            playerVars: { 'autoplay': 0, 'start': 10, 'loop': 1, 'playlist': 'OgPRcW4ytmE' },
+            events: { 'onStateChange': (e) => { if(e.data === YT.PlayerState.ENDED) player.seekTo(10); } }
         });
-        requestAnimationFrame(drawEmbers);
     }
-    drawEmbers();
 
-    function spawnEmbers() {
-        for(let i=0; i<30; i++) {
-            let e = document.createElement('div');
-            e.style.position = 'fixed';
-            e.style.left = Math.random() * 100 + 'vw';
-            e.style.top = '105vh';
-            e.style.width = '4px'; e.style.height = '4px';
-            e.style.background = 'var(--ember)';
-            e.style.boxShadow = '0 0 10px var(--magma)';
-            e.style.zIndex = '10002';
-            e.style.transition = '3s cubic-bezier(0,1,1,1)';
-            document.body.appendChild(e);
-            setTimeout(() => { e.style.transform = `translateY(-120vh) translateX(${(Math.random()-0.5)*200}px)`; e.style.opacity = '0'; }, 10);
-            setTimeout(() => e.remove(), 3000);
+    // 2. 5-Second Hold Logic
+    const btn = document.getElementById('ignite-btn');
+    const ring = document.getElementById('ring-circle');
+    let holdTimer, progress = 0;
+
+    btn.addEventListener('mousedown', startHold);
+    btn.addEventListener('mouseup', stopHold);
+    btn.addEventListener('touchstart', startHold);
+    btn.addEventListener('touchend', stopHold);
+
+    function startHold() {
+        holdTimer = setInterval(() => {
+            progress += 2;
+            ring.style.strokeDashoffset = 440 - (progress / 100 * 440);
+            if (progress >= 100) {
+                clearInterval(holdTimer);
+                document.getElementById('ignite-overlay').style.display = 'none';
+                player.playVideo();
+                player.seekTo(10);
+            }
+        }, 100);
+    }
+    function stopHold() { clearInterval(holdTimer); progress = 0; ring.style.strokeDashoffset = 440; }
+
+    // 3. DJ Mixer Animation
+    const mixer = document.getElementById('mixer');
+    for(let i=0; i<15; i++) {
+        let bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.animationDelay = (Math.random() * 0.5) + 's';
+        mixer.appendChild(bar);
+    }
+
+    // 4. Task Lock
+    let solved = 0;
+    const taskArea = document.getElementById('task-area');
+    for(let i=0; i<3; i++) {
+        let l = document.createElement('div');
+        l.className = 'lens-task';
+        l.style.left = Math.random()*80 + '%';
+        l.style.top = Math.random()*80 + '%';
+        l.onclick = () => { l.remove(); solved++; if(solved === 3) document.getElementById('lock').remove(); };
+        taskArea.appendChild(l);
+    }
+
+    // 5. Audio Effects & Particles
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+    }
+
+    function boom(type) {
+        if(type === 'conf') playBeep(600, 'square'); // Pop
+        else playBeep(150, 'sine'); // Boom
+        
+        for(let i=0; i<20; i++) {
+            let p = document.createElement('div');
+            p.style.position = 'fixed';
+            p.style.left = '50%'; p.style.top = '80%';
+            p.innerText = type === 'conf' ? '✨' : '🌸';
+            p.style.transition = '2s';
+            document.body.appendChild(p);
+            setTimeout(() => {
+                p.style.transform = `translate(${(Math.random()-0.5)*500}px, -400px) rotate(360deg)`;
+                p.style.opacity = '0';
+            }, 10);
+            setTimeout(() => p.remove(), 2000);
         }
     }
 
-    // --- SNAKE GAME ---
-    const sc = document.getElementById("snake-canvas");
-    const sctx = sc.getContext("2d");
-    let snake = [{x: 10, y: 10}], food = {x: 5, y: 5}, dx = 1, dy = 0;
-    setInterval(() => {
-        let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-        snake.unshift(head);
-        if(head.x === food.x && head.y === food.y) food = {x: Math.floor(Math.random()*19), y: Math.floor(Math.random()*19)};
-        else snake.pop();
-        if(head.x<0 || head.x>19 || head.y<0 || head.y>19) snake = [{x:10, y:10}];
-        sctx.fillStyle = "#050505"; sctx.fillRect(0,0,300,300);
-        sctx.fillStyle = "#ff4500"; snake.forEach(p => sctx.fillRect(p.x*15, p.y*15, 13, 13));
-        sctx.fillStyle = "#fff"; sctx.fillRect(food.x*15, food.y*15, 13, 13);
-    }, 120);
-    document.addEventListener("keydown", e => {
-        if(e.key === "ArrowUp" && dy===0) {dx=0; dy=-1;}
-        if(e.key === "ArrowDown" && dy===0) {dx=0; dy=1;}
-        if(e.key === "ArrowLeft" && dx===0) {dx=-1; dy=0;}
-        if(e.key === "ArrowRight" && dx===0) {dx=1; dy=0;}
-    });
-
-    // --- KINETIC FLEE ---
-    const fbtn = document.getElementById('flee-btn');
-    const fzone = document.getElementById('flee-zone');
-    fzone.addEventListener('mousemove', (e) => {
-        const r = fbtn.getBoundingClientRect();
-        const dist = Math.hypot(e.clientX - (r.left + r.width/2), e.clientY - (r.top + r.height/2));
-        if(dist < 70) {
-            fbtn.style.left = Math.random() * (fzone.clientWidth - 80) + 'px';
-            fbtn.style.top = Math.random() * (fzone.clientHeight - 40) + 'px';
-            fbtn.style.background = 'white';
-            setTimeout(() => fbtn.style.background = 'var(--ember)', 200);
-        }
+    // Custom Cursor
+    document.addEventListener('mousemove', (e) => {
+        const c = document.getElementById('custom-cursor');
+        c.style.left = e.clientX + 'px';
+        c.style.top = e.clientY + 'px';
     });
 </script>
 </body>
